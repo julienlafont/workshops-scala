@@ -7,13 +7,23 @@ object DnaTools {
   /**
     * Try to parse a DNA sequence from String as a sequence of nucleobase
     */
-  def optParseDNA(str: String): Option[DNA] = ???
+  def optParseDNA(str: String): Option[DNA] = {
+    str.foldLeft(Option(Seq.empty[Base])) { case (previewDna, baseChar) =>
+      for {
+        dna <- previewDna
+        base <- Base.get(baseChar)
+      } yield dna :+ base
+    }
+  }
 
   /**
     * Parse a DNA sequence from String as a sequence of nucleobase
     * @throws IllegalArgumentException if the sequence is not valid
     */
-  def parseDNA(str: String): DNA = ???
+  def parseDNA(str: String): DNA = {
+    str.map(Base.apply)
+  }
+
 
   /**
     * Process the Hamming distance of two DNA sequences.
@@ -32,7 +42,10 @@ object DnaTools {
     *
     * @return the hamming distance of dna1 and dna2
     */
-  def hammingDistance(dna1: DNA, dna2: DNA): Long = ???
+  def hammingDistance(dna1: DNA, dna2: DNA): Long = {
+    (dna1 zip dna2)
+        .count { case (l, r) => l != r }
+  }
 
   /**
     * Search the differences between two DNA sequences.
@@ -40,19 +53,35 @@ object DnaTools {
     * Sames rules as the Hamming distance
     * @return The indices (0 based) of the differences between the two sequences
     */
-  def basesDifferences(dna1: DNA, dna2: DNA): Seq[Int] = ???
+  def basesDifferences(dna1: DNA, dna2: DNA): Seq[Int] = {
+    (dna1 zip dna2).zipWithIndex
+        .flatMap { case ((l, r), i) => if (l != r) Some(i) else None }
+  }
 
   /**
     * Return the complementary sequences of a DNA sequence.
     *
     * Nucleobase A/T are complements of each other, as C and G.
     */
-  def complementary(dna: DNA): DNA = ???
+  def complementary(dna: DNA): DNA = {
+    dna.map {
+      case A => T
+      case T => A
+      case C => G
+      case G => C
+    }
+  }
 
   /**
     * Count the number of each base in the DNA sequence
     */
-  def countBases(dna: DNA): Map[Base, Int] = ???
+  def countBases(dna: DNA): Map[Base, Int] = {
+    dna
+      .groupBy(identity)
+      .mapValues(_.size)
+  }
+
+  type TriBase = (Base, Base, Base)
 
   private val translationTableSource = """
      |FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG
@@ -60,6 +89,13 @@ object DnaTools {
      |TTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGGTTTTCCCCAAAAGGGG
      |TCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAGTCAG
    """.trim.stripMargin
+
+  private val translationTable: Map[TriBase, Char] = {
+    val Array(head, base1, base2, base3) = translationTableSource.trim.split("\n")
+    (head zip base1 zip base2 zip base3).map {
+      case (((h, b1), b2), b3) => (Base(b1), Base(b2), Base(b3)) -> h
+    }(scala.collection.breakOut)
+  }
 
   /**
     * Translate a DNA sequence in 6 frames
@@ -84,7 +120,22 @@ object DnaTools {
     *
     * @return the 3 possible translations for a DNA sequence
     */
-  def translate(dna: DNA): Seq[String] = ???
+  def translate(dna: DNA): Seq[String] = {
+
+    def cutTriBase(dna: Seq[Base], offset: Int): List[TriBase] = {
+      dna.drop(offset).grouped(3).toList.collect {
+        case Seq(b1, b2, b3) => (b1, b2, b3)
+      }
+    }
+
+    val triBasesCombinations: List[List[TriBase]] = {
+      (0 to 2).map(offset => cutTriBase(dna, offset)).toList
+    }
+
+    triBasesCombinations.map { seqTriBase =>
+      seqTriBase.map(translationTable)(collection.breakOut)
+    }
+  }
 
   /**
     * Count the longest streak (uninterrupted sequence) of each nucleobase in the given DNA sequence
@@ -94,5 +145,21 @@ object DnaTools {
     *
     * @return Map of the longest streak by nucleobase
     */
-  def longestSequences(dna: DNA): Map[Base, Int] = ???
+  def longestSequences(dna: DNA): Map[Base, Int] = {
+    case class Accumulator(lastBase: Base, lastBaseCount: Int, totalCount: Map[Base, Int])
+
+    val start = Accumulator(A, 0, Map(A -> 0, T -> 0, C -> 0, G -> 0))
+
+    val result = dna.foldLeft(start) { case (acc, base) =>
+      if (base == acc.lastBase) {
+        acc.copy(lastBaseCount = acc.lastBaseCount + 1)
+      } else if (base != acc.lastBase && acc.lastBaseCount > acc.totalCount(base)) {
+        Accumulator(base, 1, acc.totalCount.updated(acc.lastBase, acc.lastBaseCount))
+      } else {
+        acc.copy(lastBase = base, lastBaseCount = 1)
+      }
+    }
+
+    result.totalCount
+  }
 }
