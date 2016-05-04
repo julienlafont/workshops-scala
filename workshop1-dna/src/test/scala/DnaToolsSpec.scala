@@ -7,20 +7,20 @@ class DnaToolsSpec extends UnitTest {
 
   "Nucleobase factory" should {
     "Safely parse base from String" in {
-      Base.get('A') === Some(A)
-      Base.get('T') === Some(T)
-      Base.get('C') === Some(C)
-      Base.get('G') === Some(G)
+      Base.get('A') shouldEqual Some(A)
+      Base.get('T') shouldEqual Some(T)
+      Base.get('C') shouldEqual Some(C)
+      Base.get('G') shouldEqual Some(G)
     }
 
     "Reject invalid chars by returning None" in {
-      Base.get('B') === None
+      Base.get('B') shouldEqual None
     }
 
     "Reject invalid chars by returning None (type-checked)" in {
       forAll { (c: Char) =>
         whenever (c != 'A' & c != 'T' & c != 'C' & c != 'G') {
-          Base.get(c) === None
+          Base.get(c) shouldEqual None
         }
       }
     }
