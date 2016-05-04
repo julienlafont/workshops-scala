@@ -8,7 +8,9 @@ object DnaTools {
     * Parse a DNA sequence from String as a sequence of nucleobase
     * @throws IllegalArgumentException if the sequence is not valid
     */
-  def parseDNA(str: String): DNA = ???
+  def parseDNA(str: String): DNA = {
+    str.map(Base.apply)
+  }
 
   /**
     * Return the complementary sequences of a DNA sequence.

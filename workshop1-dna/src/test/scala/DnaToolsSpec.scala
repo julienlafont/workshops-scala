@@ -26,4 +26,19 @@ class DnaToolsSpec extends UnitTest {
     }
   }
 
+  "DNA tools" should {
+
+    "calculate the complementary of a DNA sequence" in {
+      DnaTools.complementary(Seq()) shouldEqual Seq()
+      DnaTools.complementary(Seq(A, T, C, G)) shouldEqual Seq(T, A, G, C)
+      DnaTools.complementary(Seq(A, A, G, C, T, T, G, A)) shouldEqual Seq(T, T, C, G, A, A, C, T)
+    }
+
+    "Count the number of each base" in {
+      DnaTools.countBases(Seq()) shouldEqual Map(A -> 0, T -> 0, C -> 0, G -> 0)
+      DnaTools.complementary(Seq(A, T, C, G)) shouldEqual Map(A -> 1, T -> 1, C -> 1, G -> 1)
+      DnaTools.complementary(Seq(A, A, G, C, T, T, G, A)) shouldEqual Map(A -> 3, T -> 2, C -> 1, G -> 2)
+    }
+  }
+
 }
