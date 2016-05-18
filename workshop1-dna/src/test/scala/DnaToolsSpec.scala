@@ -36,8 +36,8 @@ class DnaToolsSpec extends UnitTest {
 
     "Count the number of each base" in {
       DnaTools.countBases(Seq()) shouldEqual Map(A -> 0, T -> 0, C -> 0, G -> 0)
-      DnaTools.complementary(Seq(A, T, C, G)) shouldEqual Map(A -> 1, T -> 1, C -> 1, G -> 1)
-      DnaTools.complementary(Seq(A, A, G, C, T, T, G, A)) shouldEqual Map(A -> 3, T -> 2, C -> 1, G -> 2)
+      DnaTools.countBases(Seq(A, T, C, G)) shouldEqual Map(A -> 1, T -> 1, C -> 1, G -> 1)
+      DnaTools.countBases(Seq(A, A, G, C, T, T, G, A)) shouldEqual Map(A -> 3, T -> 2, C -> 1, G -> 2)
     }
   }
 

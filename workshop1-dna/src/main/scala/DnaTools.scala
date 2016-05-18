@@ -17,12 +17,25 @@ object DnaTools {
     *
     * Nucleobase A/T are complements of each other, as C and G.
     */
-  def complementary(dna: DNA): DNA = ???
+  def complementary(dna: DNA): DNA = {
+    dna.map {
+      case A => T
+      case T => A
+      case C => G
+      case G => C
+    }
+  }
 
   /**
     * Count the number of each base in the DNA sequence
     */
-  def countBases(dna: DNA): Map[Base, Int] = ???
+  private val zero: Map[Base, Int] = Map(A -> 0, T -> 0, C -> 0, G -> 0)
+
+  def countBases(dna: DNA): Map[Base, Int] = {
+    dna.foldLeft(zero) { case (acc, elem) =>
+      acc + (elem -> (acc(elem) + 1))
+    }
+  }
 
   /**
     * Check if the `subsequence` is contained in the main DNA sequence.
