@@ -40,13 +40,16 @@ object DnaTools {
   /**
     * Check if the `subsequence` is contained in the main DNA sequence.
     */
-  def contains(dna: DNA, subsequence: DNA): Boolean = ???
+  def contains(dna: DNA, subsequence: DNA): Boolean = dna.containsSlice(subsequence)
 
 
   /**
     * Insert the `subsequence` at the `index` position of the DNA sequence (0-indexed)
     */
-  def insertSubsequence(dna: DNA, subsequence: DNA, index: Int): DNA = ???
+  def insertSubsequence(dna: DNA, subsequence: DNA, index: Int): DNA = {
+    val (left, right) = dna.splitAt(index)
+    left ++ subsequence ++ right
+  }
 
   /**
     * Process the Hamming distance of two DNA sequences.
@@ -65,7 +68,12 @@ object DnaTools {
     *
     * @return the hamming distance of dna1 and dna2
     */
-  def hammingDistance(dna1: DNA, dna2: DNA): Long = ???
+
+  def hammingDistance(dna1: DNA, dna2: DNA): Long = {
+    (dna1 zip dna2)
+      .count { case (l, r) => l != r }
+  }
+
 
   /**
     * Search the differences between two DNA sequences.
@@ -73,7 +81,14 @@ object DnaTools {
     * Sames rules as the Hamming distance
     * @return The indices (0 based) of the differences between the two sequences
     */
-  def basesDifferences(dna1: DNA, dna2: DNA): Seq[Int] = ???
+  def basesDifferences(dna1: DNA, dna2: DNA): Seq[Int] = {
+    (dna1 zip dna2)
+      .zipWithIndex
+      .flatMap { case ((l, r), i) =>
+        if (l != r) Some(i)
+        else None
+      }
+  }
 
   private val translationTableSource = """
      |FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG
