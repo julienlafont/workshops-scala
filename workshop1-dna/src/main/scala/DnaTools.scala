@@ -98,7 +98,7 @@ object DnaTools {
    """.trim.stripMargin
 
   /**
-    * Translate a DNA sequence in 6 frames
+    * Translate a DNA sequence in 3 frames
     *
     * In genetics a reading frame is a way to divide a sequence of nucleotides (DNA bases) into a set of consecutive
     * non-overlapping triplets (also called codon).
@@ -120,7 +120,9 @@ object DnaTools {
     *
     * @return the 3 possible translations for a DNA sequence
     */
-  def translate(dna: DNA): Seq[String] = ???
+  def translate(dna: DNA): Seq[String] = {
+    ???
+  }
 
   /**
     * Count the longest streak (uninterrupted sequence) of each nucleobase in the given DNA sequence
@@ -130,5 +132,7 @@ object DnaTools {
     *
     * @return Map of the longest streak by nucleobase
     */
-  def longestSequences(dna: DNA): Map[Base, Int] = ???
+  def longestSequences(dna: DNA): Map[Base, Int] = {
+    ???
+  }
 }

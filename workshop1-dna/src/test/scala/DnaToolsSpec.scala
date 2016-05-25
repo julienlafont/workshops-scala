@@ -67,6 +67,11 @@ class DnaToolsSpec extends UnitTest {
       DnaTools.basesDifferences(Seq(A, T, C, G), Seq(G, C, T, A)) shouldEqual Seq(0, 1, 2, 3)
       DnaTools.basesDifferences(Seq(A, T, C, G), Seq(A, C, C, A)) shouldEqual Seq(1, 3)
     }
+
+    "Translate a DNA sequence" in {
+      val res1 = DnaTools.translate(Seq(A,G,G,T,G,A,C,A,C,C,G,C,A,A,G,C,C,T,T,A,T,A,T,T,A,G,C)) 
+      res1 should contain only ("R*HRKPYIS", "GDTASLIL", "VTPQALY*")
+    }
   }
 
 }
