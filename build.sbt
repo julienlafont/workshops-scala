@@ -20,3 +20,4 @@ libraryDependencies in ThisBuild ++= Seq(
 
 lazy val p1 = project in file("workshop1-dna")
 lazy val p2 = project in file("workshop2-features")
+lazy val p3 = project in file("workshop3-kata-tennis")
